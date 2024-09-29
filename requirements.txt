@@ -2,7 +2,9 @@ openai==1.50.2
 langchain==0.3.1
 langchain-openai==0.2.1
 chromadb==0.5.11
+langchain_chroma==0.1.4
 langchain-community==0.3.1
+langchain-huggingface==0.1.0
 torch==2.4.1
 transformers==4.45.1
 accelerate==0.34.2
