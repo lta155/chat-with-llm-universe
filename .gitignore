@@ -1,0 +1,8 @@
+.vscode/
+.media/
+logs/
+.env
+profile.json
+# Compiled python modules
+*.pyc
+__pycache__/
