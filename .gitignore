@@ -6,3 +6,4 @@ profile.json
 # Compiled python modules
 *.pyc
 __pycache__/
+test*
