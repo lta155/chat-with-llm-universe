@@ -1,3 +1,3 @@
-from modelscope import snapshot_download
-
-model_dir = snapshot_download('Qwen/Qwen2.5-7B-Instruct', cache_dir='/sdc/model')
+from huggingface_hub import snapshot_download
+# from modelscope import snapshot_download
+model_dir = snapshot_download('TencentBAC/Conan-embedding-v1', cache_dir='/sdc/model')
