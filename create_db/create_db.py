@@ -4,7 +4,6 @@ from langchain_community.document_loaders.markdown import UnstructuredMarkdownLo
 from langchain_text_splitters.markdown import MarkdownTextSplitter
 from langchain_text_splitters.character import RecursiveCharacterTextSplitter
 from langchain_chroma.vectorstores import Chroma
-from spilt import spilt_ipynb
 import os
 
 def get_files(dir_path: str):
