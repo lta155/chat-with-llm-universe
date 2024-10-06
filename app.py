@@ -1,12 +1,11 @@
 import streamlit as st
 from qa_chain.qa_chain import QA_chain
-with st.sidebar:
-    st.title("🦜🔗 Chat with llm-universe")
 
+         
 def init_session_state():
     st.session_state.rag = QA_chain(
-        llm="/sdc/model/Qwen/Qwen2___5-7B-Instruct",
-        embedding="/sdc/model/models--TencentBAC--Conan-embedding-v1/snapshots/fbdfbc53cd9eff1eb55eadc28d99a9d4bff4135f",
+        llm="glm-4-plus",
+        embedding="embedding-3",
         db_directory="knowledge_db/vector_db"
     )
     st.session_state.messages = []
@@ -18,7 +17,12 @@ if "rag" not in st.session_state:
 for message in st.session_state.messages:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
-
+with st.sidebar:
+    st.title("🦜🔗 Chat with llm-universe")
+    if st.button("Clear chat history"):
+        st.session_state.messages = []
+        st.session_state.chat_history = []
+        st.rerun()
 user_input = st.chat_input("input your question")
 
 if user_input:

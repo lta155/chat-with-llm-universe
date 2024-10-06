@@ -1,13 +1,11 @@
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.runnables import RunnablePassthrough
 from langchain_chroma.vectorstores import Chroma
-from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_community.embeddings import ZhipuAIEmbeddings
 from langchain.chains import create_history_aware_retriever
 from langchain.chains import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_core.prompts import MessagesPlaceholder
 from langchain_core.messages import AIMessage, HumanMessage
-
 import os
 import sys
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
@@ -21,8 +19,9 @@ class QA_chain():
             db_directory: str
             ):
         self.llm = get_llm(model=llm)
-        embedding = HuggingFaceEmbeddings(model_name=embedding)
+        embedding = ZhipuAIEmbeddings(model=embedding)
         vector_store = Chroma(
+            collection_name="llm-universe",
             embedding_function=embedding,
             persist_directory=db_directory
             )

@@ -1,9 +1,8 @@
-from langchain_huggingface import HuggingFaceEmbeddings
-from langchain_community.document_loaders.notebook import NotebookLoader
-from langchain_community.document_loaders.markdown import UnstructuredMarkdownLoader
-from langchain_text_splitters.markdown import MarkdownTextSplitter
-from langchain_text_splitters.character import RecursiveCharacterTextSplitter
+from langchain_text_splitters.markdown import ExperimentalMarkdownSyntaxTextSplitter
+from langchain_community.embeddings import ZhipuAIEmbeddings
 from langchain_chroma.vectorstores import Chroma
+from load_data import ipynb_load, md_load
+from tqdm import tqdm
 import os
 
 def get_files(dir_path: str):
@@ -14,55 +13,39 @@ def get_files(dir_path: str):
     return file_list
 
 
-def get_doc(paths: list[str]):
-    md_loaders = []
-    ipynb_loaders = []
+def get_doc(paths: list[str]) -> list[str]:
+    doc = []
     for path in paths:
         if path.endswith("md"):
-            md_loaders.append(UnstructuredMarkdownLoader(file_path=path))
+            doc.append(md_load(path=path))
         elif path.endswith("ipynb"):
-            ipynb_loaders.append(NotebookLoader(path=path))
-    md_docs = [md_loader.load() for md_loader in md_loaders]
-    ipynb_docs = [ipynb_loader.load() for ipynb_loader in ipynb_loaders]
-    return md_docs, ipynb_docs
+            doc.append(ipynb_load(path=path))
+    return doc
 
 
 def create_db(dir_path: str, persist_directory: str):
     file_list = get_files(dir_path=dir_path)
-    md_docs, ipynb_docs = get_doc(file_list)
-    md_splitter = MarkdownTextSplitter(
-        chunk_size=400,
-        chunk_overlap=100
-    )
-    
-    splited_md = []
-    for md_doc in md_docs:
-        splited_md.extend(md_splitter.split_documents(md_doc))
-    separators = [
-    "'markdown' cell",
-    "'code' cell",
-    "/n/n",
-    "/n",
-    " "
-    ]
-    ipynb_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=400,
-        chunk_overlap=100,
-        separators=separators,
-        keep_separator=True
-    )
-    splited_ipynb = []
-    for ipynb_doc in ipynb_docs:
-        splited_ipynb.extend(ipynb_splitter.split_documents(ipynb_doc))
-    documents = splited_md + splited_ipynb
-
-    embedding = HuggingFaceEmbeddings(model_name="/sdc/model/models--TencentBAC--Conan-embedding-v1/snapshots/fbdfbc53cd9eff1eb55eadc28d99a9d4bff4135f")
-    vector_store = Chroma.from_documents(
-        documents=documents,
-        embedding=embedding,
+    docs = get_doc(file_list)
+    md_splitter = ExperimentalMarkdownSyntaxTextSplitter()
+    for doc in docs:
+        splitted_doc = md_splitter.split_text(doc)
+    documents  = []
+    while splitted_doc:
+        current_ipynb = splitted_doc.pop(0)
+        if "Code" in current_ipynb.metadata:
+            documents[-1].page_content += "\n"
+            documents[-1].page_content += current_ipynb.page_content
+        else:
+            documents.append(current_ipynb)
+    embedding = ZhipuAIEmbeddings(model="embedding-3")
+    vector_store = Chroma(
+        collection_name="llm-universe",
+        embedding_function=embedding,
         persist_directory=persist_directory
     )
-
+    for i in tqdm(range(10, len(documents), 10)):
+        vector_store.add_documents(documents=documents[i-10: i])
+    vector_store.add_documents(documents=documents[300:])
     return vector_store
 if __name__ == "__main__":
     create_db(dir_path="knowledge_db/notebook", persist_directory="knowledge_db/vector_db")
