@@ -1,8 +1,8 @@
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_chroma.vectorstores import Chroma
 from langchain_community.embeddings import ZhipuAIEmbeddings
-from langchain.chains import create_history_aware_retriever
-from langchain.chains import create_retrieval_chain
+from langchain.chains.history_aware_retriever import create_history_aware_retriever
+from langchain.chains.retrieval import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_core.prompts import MessagesPlaceholder
 from langchain_core.messages import AIMessage, HumanMessage
@@ -16,7 +16,8 @@ class QA_chain():
             self,
             llm: str,
             embedding: str,
-            db_directory: str
+            db_directory: str,
+            k: int
             ):
         self.llm = get_llm(model=llm)
         embedding = ZhipuAIEmbeddings(model=embedding)
@@ -27,14 +28,14 @@ class QA_chain():
             )
         self.retriever = vector_store.as_retriever(
             search_type="similarity",
-            search_kwargs={"k": 5},
+            search_kwargs={"k": k},
         )
         self.contextualize_prompt = self._get_contextualize_prompt()
     def answer(self, question:str, chat_history: list):
         chat_history = [HumanMessage(value) if index % 2 == 0 else AIMessage(value) for index, value in enumerate(chat_history)]
         system_prompt = (
             "你是一个问答任务的助手。"
-            "请你使用以下检索到的上下文片段来回答问题"
+            "请你根据以下检索到的上下文片段来回答问题"
             "如果检索到的片段无法回答问题，就说不知道"
             "\n\n"
             "{context}"
@@ -49,7 +50,8 @@ class QA_chain():
         question_answer_chain = create_stuff_documents_chain(self.llm, qa_prompt)
 
         rag_chain = create_retrieval_chain(self.contextualize_prompt, question_answer_chain)
-        return rag_chain.invoke({"input": question, "chat_history": chat_history})["answer"]
+        answer = rag_chain.invoke({"input": question, "chat_history": chat_history})
+        return answer["answer"], answer["context"]
 
     def _get_contextualize_prompt(self):
         contextualize_q_system_prompt = (
