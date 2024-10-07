@@ -3,7 +3,6 @@ from typing import Any, List, Optional
 from langchain.callbacks.manager import CallbackManagerForLLMRun
 from transformers import AutoTokenizer, AutoModelForCausalLM, GenerationConfig
 import torch
-import os
 
 
 class Qwen2_5_LLM(LLM):
@@ -12,7 +11,6 @@ class Qwen2_5_LLM(LLM):
     model: AutoModelForCausalLM = None
         
     def __init__(self, model_name_or_path :str):
-        os.environ["CUDA_VISIBLE_DEVICES"] = "1"
         super().__init__()
         print("正在从本地加载模型...")
         self.tokenizer = AutoTokenizer.from_pretrained(model_name_or_path, use_fast=False)
@@ -23,7 +21,7 @@ class Qwen2_5_LLM(LLM):
     def _call(self, prompt : str, stop: Optional[List[str]] = None,
                 run_manager: Optional[CallbackManagerForLLMRun] = None,
                 **kwargs: Any):
-
+        
         messages = [{"role": "user", "content": prompt }]
         input_ids = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
         model_inputs = self.tokenizer([input_ids], return_tensors="pt").to('cuda')

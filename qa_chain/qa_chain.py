@@ -12,6 +12,19 @@ sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from llm.llm import get_llm
 
 class QA_chain():
+    """
+    构建一个问答链，用于处理用户问题并利用上下文提供答案。
+
+    此类通过大型语言模型（LLM）和嵌入模型从向量存储中检索相关信息，并生成答案。
+    
+    属性：
+    llm: LLM 实例，用于生成答案。
+    embedding: 嵌入模型实例，用于计算向量表示。
+    db_directory: 向量存储的目录路径。
+    retriever: 向量检索器，用于从存储中检索相关文档。
+    contextualize_prompt: 用于生成上下文相关问题的提示模板。
+    """
+    
     def __init__(
             self,
             llm: str,
@@ -19,6 +32,16 @@ class QA_chain():
             db_directory: str,
             k: int
             ):
+        """
+        初始化 QA_chain 类的实例。
+
+        参数：
+        llm (str): 要使用的语言模型的名称。
+        embedding (str): 嵌入模型的名称。
+        db_directory (str): 向量存储数据库的目录路径。
+        k (int): 检索时返回的相关文档数量。
+        """
+
         self.llm = get_llm(model=llm)
         embedding = ZhipuAIEmbeddings(model=embedding)
         vector_store = Chroma(
@@ -31,7 +54,23 @@ class QA_chain():
             search_kwargs={"k": k},
         )
         self.contextualize_prompt = self._get_contextualize_prompt()
+
     def answer(self, question:str, chat_history: list):
+        """
+        根据用户问题和聊天历史生成答案。
+
+        此方法接收用户提出的问题和历史聊天记录，并利用上下文生成相应的答案。
+
+        参数：
+        question (str): 用户提出的问题。
+        chat_history (list): 之前的聊天记录，包含用户和 AI 的消息。
+
+        返回：
+        tuple: 返回一个包含答案和上下文的元组。
+               - answer (str): 生成的答案。
+               - context (str): 与答案相关的上下文信息。
+        """
+
         chat_history = [HumanMessage(value) if index % 2 == 0 else AIMessage(value) for index, value in enumerate(chat_history)]
         qa_prompt = ChatPromptTemplate.from_messages(
             [
@@ -47,6 +86,10 @@ class QA_chain():
         return answer["answer"], answer["context"]
 
     def _get_contextualize_prompt(self):
+        """
+        创建并返回获取对话历史记录并返回文档的链。
+        """
+
         contextualize_q_system_prompt = (
             "给定聊天记录和最新的用户问题。"
             "请你根据聊天记录中的上下文制定一个可以被理解的独立问题。"
