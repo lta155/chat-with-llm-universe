@@ -1,6 +1,6 @@
 # chat-with-llm-universe
 
-此项目是基于大语言模型的[llm-universe](https://github.com/datawhalechina/llm-universe)问答助手，是使用langchain 0.3 以 llm-universe 第一部分为主体内容做的RAG应用。如果你想了解更多技术细节见[TECHNICAL_DETAILS.md](https://github.com/lta155/chat-with-llm-universe/blob/main/TECHNICAL_DETAILS.md)
+此项目是基于大语言模型的[llm-universe](https://github.com/datawhalechina/llm-universe)问答助手，是使用langchain 0.3 以 llm-universe 第一部分为主体内容做的RAG应用。如果你想了解更多技术细节见[DETAILS.md](https://github.com/lta155/chat-with-llm-universe/blob/main/DETAILS.md)
 
 ## 运行步骤
 
