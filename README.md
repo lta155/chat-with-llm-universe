@@ -4,7 +4,7 @@
 
 ## 运行步骤
 
-1. 以智谱的`glm-4-plus`与`embedding-3`为例：
+* api运行，以智谱的`glm-4-plus`与`embedding-3`为例：
 
     安装相关依赖
     ```bash
@@ -18,7 +18,7 @@
     ```bash
     streamlit run app.py
     ```
-2. 本地运行：
+* 本地运行：
 
     安装相关依赖
     ```bash
@@ -28,6 +28,10 @@
 
     本地使用 embedding model，并在[qachain.py](https://github.com/lta155/chat-with-llm-universe/blob/main/qa_chain/qa_chain.py)中更改`embedding`，可以参考[HuggingFaceEmbeddings](https://api.python.langchain.com/en/latest/embeddings/langchain_huggingface.embeddings.huggingface.HuggingFaceEmbeddings.html#langchain_huggingface.embeddings.huggingface.HuggingFaceEmbeddings)中example。
 
+    在`app.py`中修改`QA_chain`中相应参数，并在命令行中启动streamlit服务。
+    ```bash
+    streamlit run app.py
+    ```
 
 ## 致谢
 [self-llm](https://github.com/datawhalechina/self-llm)：llm接入langchain
