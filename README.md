@@ -26,8 +26,12 @@
     ```
     下载llm权重并接入`langchain`，可以参考[qwen.py](https://github.com/lta155/chat-with-llm-universe/blob/main/llm/qwen.py)。
 
-    本地使用 embedding model，并在[qachain.py](https://github.com/lta155/chat-with-llm-universe/blob/main/qa_chain/qa_chain.py)中更改`embedding`，可以参考[HuggingFaceEmbeddings](https://api.python.langchain.com/en/latest/embeddings/langchain_huggingface.embeddings.huggingface.HuggingFaceEmbeddings.html#langchain_huggingface.embeddings.huggingface.HuggingFaceEmbeddings)中example。
+    本地使用 embedding model，并在[create_db.py](https://github.com/lta155/chat-with-llm-universe/blob/main/create_db/create_db.py)与[qa_chain.py](https://github.com/lta155/chat-with-llm-universe/blob/main/qa_chain/qa_chain.py)中更改`embedding`，可以参考[HuggingFaceEmbeddings](https://api.python.langchain.com/en/latest/embeddings/langchain_huggingface.embeddings.huggingface.HuggingFaceEmbeddings.html#langchain_huggingface.embeddings.huggingface.HuggingFaceEmbeddings)中example。
 
+    构建向量数据库
+    ```bash
+    python create_db/create_db.py
+    ```
     在`app.py`中修改`QA_chain`中相应参数，并在命令行中启动streamlit服务。
     ```bash
     streamlit run app.py
