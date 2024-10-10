@@ -3,7 +3,7 @@
 此项目是基于大语言模型的[llm-universe](https://github.com/datawhalechina/llm-universe)问答助手，是使用langchain 0.3 以 llm-universe 第一部分为主体内容做的RAG应用。本项目除加载`markdown`及`notebook`文件外均使用`Langchain`框架实现。
 
 <div style="text-align: center;">
-<img src="./img/structure.png" alt="solution" height="300">
+<img src="./img/structure.png" alt="solution" width="800">
 </div>
 
 ## 运行步骤
